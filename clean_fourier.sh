@@ -1,0 +1,1 @@
+rm images/split/* images/fourier/* images/fourier/split/* images/fourier/equalized/* images/fourier/split/equalized/*

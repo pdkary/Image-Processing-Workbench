@@ -1,0 +1,1 @@
+rm images/equalized/* images/filtered/* images/histograms/* images/matched/*
