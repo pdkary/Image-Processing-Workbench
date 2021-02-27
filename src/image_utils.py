@@ -33,7 +33,7 @@ class ImageUtils:
         return new_img
 
     @staticmethod
-    def substract_from(img1, img2,k=1,filename=None):
+    def subtract_from(img1, img2,k=1,filename=None):
         new_img = img2 - k*img1
         if filename is not None:
             cv2.imwrite("images/arithmetic/"+filename+"_subtracted.jpg",new_img)

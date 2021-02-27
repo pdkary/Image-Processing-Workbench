@@ -6,10 +6,11 @@ from src.adaptive_median_filter import AdaptiveMedianFilter
 from src.kernel_filter import KernelFilter
 from src.image_transformer import ImageTransformer
 from src.image_utils import ImageUtils
+from src.intensity_transformer import IntensityTransformer
 import numpy as np
 import cv2
 
-blur_kernel = (
+blur_kernel_5 = (
     np.array(
         [
             [1, 2, 4, 2, 1],
@@ -22,6 +23,17 @@ blur_kernel = (
     / 100
 )
 
+blur_kernel_3 = (
+    np.array(
+        [
+            [1, 2, 1],
+            [2, 4, 2],
+            [1, 2, 1],
+        ]
+    )
+    / 16
+)
+
 if __name__ == "__main__":
 
     filename1 = "adf_test"
@@ -30,9 +42,8 @@ if __name__ == "__main__":
     it = ImageTransformer(img1)
 
     it.transform(FourierTransform.transform)\
-        .transform(MaskFilter.butterworth_high_pass,10,5,filename1)\
+        .transform(MaskFilter.butterworth_high_pass,20,10,filename1)\
         .transform(FourierTransform.inverse_transform,filename1)\
-        .transform(KernelFilter.filter,blur_kernel,filename1+"_bhp")\
-        .transform(ImageUtils.substract_from,img1,.8,filename1)\
-        .transform(AdaptiveMedianFilter.filter, 10)\
+        .transform(ImageUtils.subtract_from,img1,.5,filename1)\
+        .transform(AdaptiveMedianFilter.filter, 50)\
         .write("images/"+filename1+"_transformed.jpg")
