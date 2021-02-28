@@ -46,8 +46,8 @@ class ImageUtils:
         return ImageUtils.add(img2,img1,k=k,filename=filename)
     
     @staticmethod
-    def average(img1,img2,filename=None):
-        new_img = (img1+img2)/2
+    def average(img1,img2,k=1,filename=None):
+        new_img = (img1+k*img2)/2
         if filename is not None:
             cv2.imwrite("images/arithmetic/"+filename+"_averaged.jpg",new_img)
         return new_img

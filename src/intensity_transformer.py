@@ -5,16 +5,27 @@ class IntensityTransformer:
 
     @staticmethod
     def transform(img,func,filename=None):
-        N = img.shape[0]
-        M = img.shape[1]
+        if len(img.shape)==3:
+            return IntensityTransformer.transform_color(img,func,filename)
+        if len(img.shape)==2:
+            return IntensityTransformer.transform_flat(img,func,filename)
+    
+    @staticmethod
+    def transform_color(img,func,filename=None):
         img = np.uint8(img)
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-
         img[:,:,2] = np.vectorize(func)(img[:,:,2])
-        img = cv2.cvtColor(img, cv2.COLOR_HSV2RGB)
+        img = cv2.cvtColor(img,cv2.COLOR_HSV2RGB)
         if filename is not None:
-            cv2.imwrite("images/intensity_mapped/"+filename+".jpg",img)
+            cv2.imwrite("images/filtered/"+filename+"_mapped.jpg",img)
+        return img
+
+    @staticmethod
+    def transform_flat(img,func,filename=None):
+        img = np.vectorize(func)(img)
+        if filename is not None:
+            cv2.imwrite("images/filtered/"+filename+"_mapped.jpg",img)
         return img
     
     @staticmethod
