@@ -14,6 +14,64 @@ class ImageTransformer:
         if self.debug:
             print("| shape after: "+str(self.img.shape))
         return self
+    
+    def add(self,img,k=1):
+        if len(self.img.shape)==3:
+            if len(img.shape)==3:
+                self.img += k*img
+            if len(img.shape)==2:
+                self.img = cv2.cvtColor(self.img, cv2.COLOR_RGB2BGR)
+                self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2HSV)
+                self.img[:,:,2] += k*img
+                self.img = cv2.cvtColor(self.img, cv2.COLOR_HSV2RGB)
+        if len(self.img.shape)==2:
+            if len(img.shape)==2:
+                self.img += k*img
+            if len(img.shape)==3:
+                raise ValueError("added image must have dimension <= src")
+        return self
+
+    def add_to(self,img,k=1):
+        tmp_img = self.img
+        self.img = img
+        return self.add(tmp_img,k=k)   
+    
+    def subtract(self,img,k=1):
+        if len(self.img.shape)==3:
+            if len(img.shape)==3:
+                self.img -= k*img
+            if len(img.shape)==2:
+                self.img = cv2.cvtColor(self.img, cv2.COLOR_RGB2BGR)
+                self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2HSV)
+                self.img[:,:,2] -= k*img
+                self.img = cv2.cvtColor(self.img, cv2.COLOR_HSV2RGB)
+        if len(self.img.shape)==2:
+            if len(img.shape)==2:
+                self.img -= k*img
+            if len(img.shape)==3:
+                raise ValueError("subtracted image must have dimension <= src")
+        return self
+    
+    def subtract_from(self,img,k=1)
+        tmp_img = self.img
+        self.img = img
+        return self.subtract(tmp_img,k=k)
+    
+    def average(self,img,k):
+        if len(self.img.shape)==3:
+            if len(img.shape)==3:
+                self.img = (self.img + k*img)/*(1+k)
+            if len(img.shape)==2:
+                self.img = cv2.cvtColor(self.img, cv2.COLOR_RGB2BGR)
+                self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2HSV)
+                self.img[:,:,2] = (self.img[:,:,2]+k*img)/(k+1)
+                self.img = cv2.cvtColor(self.img, cv2.COLOR_HSV2RGB)
+        if len(self.img.shape)==2:
+            if len(img.shape)==2:
+                self.img = (self.img + k*img)/(1+k)
+            if len(img.shape)==3:
+                raise ValueError("averaged image must have dimension <= src")
+        return self
 
     def get(self):
         return self.img

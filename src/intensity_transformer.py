@@ -51,4 +51,9 @@ class IntensityTransformer:
         f = lambda x: 255 if x >= p else 0
         return IntensityTransformer.transform(img,f,filename+"_step")
 
-
+    @staticmethod
+    def map_intensities_to_viewable(img):
+        max_val = np.max(img)
+        min_val = np.min(img)
+        f = lambda x: 255*(x-min_val)/(max_val-min_val)
+        return np.vectorize(f)(img)

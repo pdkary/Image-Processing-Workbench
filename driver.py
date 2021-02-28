@@ -13,21 +13,18 @@ import cv2
 
 if __name__ == "__main__":
 
-    filename1 = "amf"
+    filename1 = "10087_00_30s"
     filename2 = "shape"
 
     img1 = cv2.imread("images/" + filename1 + ".jpg")
-    img2 = cv2.imread("images/" + filename2 + ".jpg")
+    # img2 = cv2.imread("images/" + filename2 + ".jpg")
     
     g_img1 = ImageUtils.convert_to_grayscale(img1)
-    g_img2 = ImageUtils.convert_to_grayscale(img2)
+    # g_img2 = ImageUtils.convert_to_grayscale(img2)
 
     ImageTransformer(img1,debug=True)\
-        .transform(ImageUtils.convert_to_grayscale)\
-            .transform(AdaptiveMedianFilter.filter,3)\
-            .transform(AdaptiveMedianFilter.filter,10)\
-            .transform(AdaptiveMedianFilter.filter,90)\
-            .transform(AdaptiveMedianFilter.filter,250)\
+            .transform(Convolution.convolve,laplace_kernel_5)\
+                .transform(ImageUtils.add,img1)\
                 .write("images/"+filename1+"_transformed.jpg")
 
 
