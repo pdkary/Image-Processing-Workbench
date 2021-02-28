@@ -136,3 +136,17 @@ class MaskFilter:
         M = img.shape[1]
         mask = np.multiply(gaussian_high_pass(r_low), gaussian_low_pass(r_high))
         return MaskFilter.apply_mask(img, mask, filename)
+
+    def get_turbulence(img,k):
+        N = img.shape[0]
+        M = img.shape[1]
+        mask = np.array([[e**(-k*(u*u+v*v)**(5/6)) for v in range(M)] for u in range(N)])
+        if len(img.shape)==3:
+            new_mask = np.ndarray(img.shape)
+            new_mask[:,:,0] = mask
+            new_mask[:,:,1] = mask
+            new_mask[:,:,2] = mask
+        else:
+            new_mask = mask
+        return new_mask
+    

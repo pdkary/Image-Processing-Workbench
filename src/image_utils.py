@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-
+from src.mask_filter import MaskFilter
 
 class ImageUtils:
     @staticmethod
@@ -33,4 +33,3 @@ class ImageUtils:
     @staticmethod
     def convert_to_grayscale(img):
         return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-

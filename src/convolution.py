@@ -1,7 +1,8 @@
 import numpy as np
 from src.image_utils import ImageUtils
 from src.fourier import FourierTransform
-from src.MaskFilter import MaskFilter
+from src.mask_filter import MaskFilter
+from src.kernels import *
 import cv2
 
 
@@ -49,3 +50,4 @@ class Convolution:
                 FourierTransform.get_viewable_fourier(ft_fg),
             )
         return conv_fg
+    

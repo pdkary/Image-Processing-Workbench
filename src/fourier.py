@@ -72,7 +72,14 @@ class FourierTransform:
         reshape_basis = np.array(
             [[(-1) ** (i + j) for j in range(M)] for i in range(N)]
         )
-        return np.multiply(img,reshape_basis)
+        if len(img.shape)==3:
+            new_img = np.ndarray(img.shape,dtype=img.dtype)
+            new_img[:,:,0] = np.multiply(img[:,:,0],reshape_basis)
+            new_img[:,:,1] = np.multiply(img[:,:,1],reshape_basis)
+            new_img[:,:,2] = np.multiply(img[:,:,2],reshape_basis)
+            return new_img
+        else:
+            return np.multiply(img,reshape_basis)
 
     @staticmethod
     def get_viewable_fourier(img):

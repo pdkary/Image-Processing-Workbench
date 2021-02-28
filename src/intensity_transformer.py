@@ -48,8 +48,9 @@ class IntensityTransformer:
     
     @staticmethod
     def binary_step(img,p,filename=None):
+        newfilename = filename+"_step" if filename is not None else None
         f = lambda x: 255 if x >= p else 0
-        return IntensityTransformer.transform(img,f,filename+"_step")
+        return IntensityTransformer.transform(img,f,newfilename)
 
     @staticmethod
     def map_intensities_to_viewable(img):
@@ -57,3 +58,19 @@ class IntensityTransformer:
         min_val = np.min(img)
         f = lambda x: 255*(x-min_val)/(max_val-min_val)
         return np.vectorize(f)(img)
+    
+    @staticmethod
+    def sigmoid(img,filename=None):
+        newfilename = filename+"_sigmoid" if filename is not None else None
+        f = lambda x: round(263/(1+np.exp(-(x-128)/30)))-4
+        return IntensityTransformer.transform(img,f,newfilename)
+    
+    @staticmethod
+    def shift(img,k=1,filename=None):
+        newfilename = filename+"_shift_by_"+str(k) if filename is not None else None
+        f = lambda x: x+k if x+k <= 255 else 255
+        f2 = lambda x: f(x) if f(x)>0 else 0
+        return IntensityTransformer.transform(img,f2,newfilename)
+        
+
+
