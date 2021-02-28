@@ -29,14 +29,8 @@ class FourierTransform:
 
     @staticmethod
     def transform_flat(img, filename=None):
-        N = img.shape[0]
-        M = img.shape[1]
-        reshape_basis = np.array(
-            [[(-1) ** (i + j) for j in range(M)] for i in range(N)]
-        )
-        img = np.multiply(img, reshape_basis)
-
-        f_img = np.fft.fft2(img)
+        f_img = FourierTransform.reshape_fourier(img)
+        f_img = np.fft.fft2(f_img)
 
         if filename is not None:
             vf_img = FourierTransform.get_viewable_fourier(f_img)
@@ -45,6 +39,7 @@ class FourierTransform:
 
     @staticmethod
     def inverse_transform_flat(img):
+        img = FourierTransform.reshape_fourier(img)
         return np.abs(np.fft.ifft2(img))
 
     @staticmethod
@@ -69,6 +64,15 @@ class FourierTransform:
         if filename is not None:
             cv2.imwrite("images/fourier/"+filename+"_recovered.jpg",new_img)
         return new_img
+
+    @staticmethod
+    def reshape_fourier(img):
+        N = img.shape[0]
+        M = img.shape[1]
+        reshape_basis = np.array(
+            [[(-1) ** (i + j) for j in range(M)] for i in range(N)]
+        )
+        return np.multiply(img,reshape_basis)
 
     @staticmethod
     def get_viewable_fourier(img):

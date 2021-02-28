@@ -1,14 +1,19 @@
 from src.image_utils import ImageUtils
 import numpy as np
-
+import cv2
 
 class AdaptiveMedianFilter:
     @staticmethod
-    def filter(img, smax):
+    def filter(img, smax,filename=None):
+        new_img = np.ndarray(img.shape)
         if len(img.shape) == 3:
-            return AdaptiveMedianFilter.filter_color(img, smax)
+            new_img = AdaptiveMedianFilter.filter_color(img, smax)
         elif len(img.shape) == 2:
-            return AdaptiveMedianFilter.filter_flat(img, smax)
+            new_img = AdaptiveMedianFilter.filter_flat(img, smax)
+
+        if filename is not None:
+            cv2.imwrite("images/filtered/"+filename+"_amf.jpg",new_img)
+        return new_img
 
     @staticmethod
     def filter_flat(img, smax):

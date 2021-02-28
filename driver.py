@@ -3,10 +3,10 @@ from src.histogram_matcher import HistogramMatcher
 from src.MaskFilter import MaskFilter
 from src.fourier import FourierTransform
 from src.adaptive_median_filter import AdaptiveMedianFilter
-from src.kernel_filter import KernelFilter
 from src.image_transformer import ImageTransformer
 from src.image_utils import ImageUtils
 from src.intensity_transformer import IntensityTransformer
+from src.convolution import Convolution
 import numpy as np
 import cv2
 
@@ -33,17 +33,26 @@ blur_kernel_3 = (
     )
     / 16
 )
-
+laplace_kernel_3 = (
+    np.array(
+        [
+            [1, 1, 1],
+            [1, -8, 1],
+            [1, 1, 1],
+        ]
+    )
+)
 if __name__ == "__main__":
 
-    filename1 = "adf_test"
+    filename1 = "solar_system"
+    filename2 = "saturn"
 
     img1 = cv2.imread("images/" + filename1 + ".jpg")
-    it = ImageTransformer(img1)
+    img2 = cv2.imread("images/" + filename2 + ".jpg")
 
-    it.transform(FourierTransform.transform)\
-        .transform(MaskFilter.butterworth_high_pass,20,10,filename1)\
-        .transform(FourierTransform.inverse_transform,filename1)\
-        .transform(ImageUtils.subtract_from,img1,.5,filename1)\
-        .transform(AdaptiveMedianFilter.filter, 50)\
-        .write("images/"+filename1+"_transformed.jpg")
+    g_img2 = ImageUtils.convert_to_grayscale(img2)
+
+    ImageTransformer(img1,debug=True)\
+        .transform(Convolution.convolve,laplace_kernel_3)\
+            .transform(ImageUtils.add_to,img1,k=.5)\
+            .write("images/convolution/"+filename1+"_post.jpg")
