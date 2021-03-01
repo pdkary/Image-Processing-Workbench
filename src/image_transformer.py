@@ -1,5 +1,11 @@
 import cv2
 import numpy as np
+def map_to_view(x):
+    if x < 0:
+        return 0
+    if x > 255:
+        return 255
+    return x
 
 class ImageTransformer:
     def __init__(self, img,debug=False):
@@ -35,6 +41,7 @@ class ImageTransformer:
                 self.img += np.uint8(k*img)
             if len(img.shape)==3:
                 raise ValueError("added image must have dimension <= src")
+        self.img = np.vectorize(map_to_view)(self.img)
         return self
 
     def add_to(self,img,k=1):
@@ -61,6 +68,7 @@ class ImageTransformer:
                 self.img -= np.uint8(k*img)
             if len(img.shape)==3:
                 raise ValueError("subtracted image must have dimension <= src")
+        self.img = np.vectorize(map_to_view)(self.img)
         return self
     
     def subtract_from(self,img,k=1):
@@ -87,6 +95,7 @@ class ImageTransformer:
                 self.img = np.uint8((self.img + k*img)/(1+k))
             if len(img.shape)==3:
                 raise ValueError("averaged image must have dimension <= src")
+        self.img = np.vectorize(map_to_view)(self.img)
         return self
 
     def get(self):

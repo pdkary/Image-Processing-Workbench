@@ -51,7 +51,7 @@ class Filter(FilterBase):
         H = MaskFilter.get_turbulence(img,kt)
         f_img = FourierTransform.transform(img)
         G = H*f_img
-        F_est = ((1/H)*(H*H)/(H*H+ks))*G
+        F_est = ((1/H)*(abs(H)**2)/(abs(H)**2+ks))*G
 
         F_est = FourierTransform.reshape_fourier(F_est)
         f_est = FourierTransform.inverse_transform(F_est)
@@ -64,7 +64,7 @@ class Filter(FilterBase):
         G = H*f_img
         P = FourierTransform.transform(ImageUtils.pad_to_size(laplace_no_diag_3,img.shape))
         
-        F_est = (H/(H*H+gamma*P*P))*G
+        F_est = (H/(abs(H)**2+gamma*abs(P)**2))*G
         F_est = FourierTransform.reshape_fourier(F_est)
         f_est = FourierTransform.inverse_transform(F_est)
         return f_est

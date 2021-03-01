@@ -68,9 +68,22 @@ class IntensityTransformer:
     @staticmethod
     def shift(img,k=1,filename=None):
         newfilename = filename+"_shift_by_"+str(k) if filename is not None else None
-        f = lambda x: x+k if x+k <= 255 else 255
-        f2 = lambda x: f(x) if f(x)>0 else 0
-        return IntensityTransformer.transform(img,f2,newfilename)
-        
+        def f(x):
+            out = x+k
+            if out < 0:
+                out=0
+            if out > 255:
+                out=255
+            return out
+        return IntensityTransformer.transform(img,f,newfilename)
+    
+    @staticmethod
+    def linear_cutoff(img,k=250,filename=None):
+        newfilename = filename+"_cutoff_at_"+str(k) if filename is not None else None
+        def f(x):
+            if x >= k:
+                return k
+            return x
+        return IntensityTransformer.transform(img,f,newfilename)    
 
 

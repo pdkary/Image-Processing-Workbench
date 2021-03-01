@@ -14,15 +14,20 @@ import cv2
 
 if __name__ == "__main__":
 
-    filename1 = "20120_00_30s"
+    filename1 = "10087_00_30s"
 
-    img1 = cv2.imread("images/" + filename1 + ".jpg")
-    turbulence = .000001
-    ImageTransformer(img1,debug=True)\
-        .transform(Filter.least_square_filter,gamma=.01,k=turbulence)\
-            .write("images/"+filename1+"_ls.jpg")
+    img1 = cv2.imread("images/"+filename1+".jpg")
+    
+    med_light_img = ImageTransformer(img1).transform(IntensityTransformer.shift,10).get()
+    high_light_img = ImageTransformer(img1).transform(IntensityTransformer.shift,20).get()
 
-    ImageTransformer(img1,debug=True)\
-        .transform(Filter.wiener_filter,kt=turbulence,ks=1)\
-            .write("images/"+filename1+"_wiener.jpg")
+    ImageTransformer(img1)\
+        .transform(HistogramEqualizer.equalize)\
+            .transform(IntensityTransformer.linear_cutoff,250)\
+                .write("images/"+filename1+"_t.jpg")
+    # img1 = cv2.imread("images/20147_00_30s.jpg")
+    # img2 = cv2.imread("images/stanford.jpg")
+    # ImageTransformer(img1,debug=True)\
+    #     .transform(HistogramMatcher.match,img2)\
+    #         .write("images/"+filename1+"_t.jpg")
 
