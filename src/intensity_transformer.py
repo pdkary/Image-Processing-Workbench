@@ -84,6 +84,24 @@ class IntensityTransformer:
             if x >= k:
                 return k
             return x
-        return IntensityTransformer.transform(img,f,newfilename)    
+        return IntensityTransformer.transform(img,f,newfilename)
 
+    @staticmethod
+    def upper_threshold(img,k=220,filename=None):    
+        newfilename = filename+"_upper_t_"+str(k) if filename is not None else None
 
+        f = lambda x: x if x >= k else 0
+        return IntensityTransformer.transform(img,f,newfilename)
+    
+    @staticmethod
+    def lower_threshold(img,k=220,filename=None):    
+        newfilename = filename+"_lower_t_"+str(k) if filename is not None else None
+
+        f = lambda x: x if x <= k else 0
+        return IntensityTransformer.transform(img,f,newfilename)
+    
+    @staticmethod
+    def band_threshold(img,k1=100,k2=200,filename=None):
+        newfilename = filename+"_band_t_"+str(k1)+"_"+str(k2) if filename is not None else None
+        f = lambda x: x if (x>=k1 and x<=k2) else 0
+        return IntensityTransformer.transform(img,f,newfilename)

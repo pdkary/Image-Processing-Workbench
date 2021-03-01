@@ -14,20 +14,34 @@ import cv2
 
 if __name__ == "__main__":
 
-    filename1 = "10087_00_30s"
-
-    img1 = cv2.imread("images/"+filename1+".jpg")
+    ##IMAGE 1
+    img1 = cv2.imread("images/10087_00_30s.jpg")
+    img2 = cv2.imread("images/20107_00_30s.jpg")
     
     ImageTransformer(img1,debug=True)\
-        .transform(FourierTransform.transform)\
-            .transform(MaskFilter.butterworth_high_pass,50,1)\
-                .transform(FourierTransform.reshape_fourier)\
-                    .transform(FourierTransform.inverse_transform)\
-                        .subtract_from(HistogramEqualizer.equalize(img1))\
-                            .write("images/"+filename1+"_t.jpg")
+        .transform(HistogramMatcher.match,img2)\
+                .transform(IntensityTransformer.map_intensities_to_viewable)\
+                    .write("images/10087_00_30s_t.jpg")
+    ##IMAGE 2
+    # img1 = cv2.imread("images/20107_00_30s.jpg")
+    # ImageTransformer(img1,debug=True)\
+    #     .transform(IntensityTransformer.upper_threshold,k=150)\
+    #         .subtract_from(img1,k=.45)\
+    #             .transform(IntensityTransformer.map_intensities_to_viewable)\
+    #                 .write("images/20107_00_30s_t.jpg")
+    
+    ##IMAGE 3
+    # img1 = cv2.imread("images/20120_00_30s.jpg")
+    # ImageTransformer(img1,debug=True)\
+    #     .transform(IntensityTransformer.upper_threshold,k=150)\
+    #         .subtract_from(img1,k=.45)\
+    #             .transform(IntensityTransformer.map_intensities_to_viewable)\
+    #                 .write("images/20120_00_30s_t.jpg")
+    
+    ##IMAGE 4
     # img1 = cv2.imread("images/20147_00_30s.jpg")
     # img2 = cv2.imread("images/stanford.jpg")
     # ImageTransformer(img1,debug=True)\
     #     .transform(HistogramMatcher.match,img2)\
-    #         .write("images/"+filename1+"_t.jpg")
+    #         .write("images/20147_00_30s_t.jpg")
 

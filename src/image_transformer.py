@@ -22,6 +22,7 @@ class ImageTransformer:
         return self
     
     def add(self,img,k=1):
+        print("beginning add")
         img = np.uint8(img)
         if len(self.img.shape)==3:
             if len(img.shape)==3:
@@ -51,6 +52,7 @@ class ImageTransformer:
         return self.add(tmp_img,k=k)   
     
     def subtract(self,img,k=1):
+        print("beginning subtract")
         img = np.uint8(img)
         if len(self.img.shape)==3:
             if len(img.shape)==3:
@@ -78,7 +80,8 @@ class ImageTransformer:
         self.img = img
         return self.subtract(tmp_img,k=k)
     
-    def average(self,img,k):
+    def average(self,img,k=1):
+        print("beginning average")
         if len(self.img.shape)==3:
             if len(img.shape)==3:
                 self.img = cv2.cvtColor(self.img, cv2.COLOR_RGB2BGR)
