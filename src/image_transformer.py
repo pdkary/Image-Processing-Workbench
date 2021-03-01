@@ -22,6 +22,7 @@ class ImageTransformer:
         return self
     
     def add(self,img,k=1):
+        img = np.uint8(img)
         if len(self.img.shape)==3:
             if len(img.shape)==3:
                 self.img = cv2.cvtColor(self.img, cv2.COLOR_RGB2BGR)
@@ -50,6 +51,7 @@ class ImageTransformer:
         return self.add(tmp_img,k=k)   
     
     def subtract(self,img,k=1):
+        img = np.uint8(img)
         if len(self.img.shape)==3:
             if len(img.shape)==3:
                 self.img = cv2.cvtColor(self.img, cv2.COLOR_RGB2BGR)

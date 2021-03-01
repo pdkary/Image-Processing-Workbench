@@ -18,13 +18,13 @@ if __name__ == "__main__":
 
     img1 = cv2.imread("images/"+filename1+".jpg")
     
-    med_light_img = ImageTransformer(img1).transform(IntensityTransformer.shift,10).get()
-    high_light_img = ImageTransformer(img1).transform(IntensityTransformer.shift,20).get()
-
-    ImageTransformer(img1)\
-        .transform(HistogramEqualizer.equalize)\
-            .transform(IntensityTransformer.linear_cutoff,250)\
-                .write("images/"+filename1+"_t.jpg")
+    ImageTransformer(img1,debug=True)\
+        .transform(FourierTransform.transform)\
+            .transform(MaskFilter.butterworth_high_pass,50,1)\
+                .transform(FourierTransform.reshape_fourier)\
+                    .transform(FourierTransform.inverse_transform)\
+                        .subtract_from(HistogramEqualizer.equalize(img1))\
+                            .write("images/"+filename1+"_t.jpg")
     # img1 = cv2.imread("images/20147_00_30s.jpg")
     # img2 = cv2.imread("images/stanford.jpg")
     # ImageTransformer(img1,debug=True)\
