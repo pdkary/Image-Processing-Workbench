@@ -1,7 +1,9 @@
 import numpy as np
 import cv2
 
-
+"""
+ASSUMES ALL INPUT IMAGES ARE EITHER GRAYSCALE OR HSV
+"""
 class FourierTransform:
     @staticmethod
     def transform(img, filename=None):
@@ -13,23 +15,15 @@ class FourierTransform:
     @staticmethod
     def transform_color(img, filename=None):
         new_img = np.ndarray(img.shape, dtype="complex64")
-        Rimg = img[:, :, 0]
-        Gimg = img[:, :, 1]
-        Bimg = img[:, :, 2]
-        if filename != None:
-            rf = "split/" + filename + "_red"
-            gf = "split/" + filename + "_green"
-            bf = "split/" + filename + "_blue"
-        else:
-            rf, bf, gf = None, None, None
-        new_img[:, :, 0] = FourierTransform.transform_flat(Rimg, rf)
-        new_img[:, :, 1] = FourierTransform.transform_flat(Gimg, gf)
-        new_img[:, :, 2] = FourierTransform.transform_flat(Bimg, bf)
+        new_img[:, :, 0] = img[:,:,0]
+        new_img[:, :, 1] = img[:,:,1]
+        new_img[:, :, 2] = FourierTransform.transform_flat(img[:,:,2], filename=filename)
         return new_img
 
     @staticmethod
     def transform_flat(img, filename=None):
         f_img = FourierTransform.reshape_fourier(img)
+        f_img = np.nan_to_num(f_img, copy=True, nan=0.0, posinf=255, neginf=0) 
         f_img = np.fft.fft2(f_img)
 
         if filename is not None:
@@ -39,18 +33,18 @@ class FourierTransform:
 
     @staticmethod
     def inverse_transform_flat(img):
-        img = FourierTransform.reshape_fourier(img)
+        # img = FourierTransform.reshape_fourier(img)
         return np.abs(np.fft.ifft2(img))
 
     @staticmethod
     def inverse_transform_color(img):
         new_img = np.ndarray(img.shape)
-        Rimg = img[:, :, 0]
-        Gimg = img[:, :, 1]
-        Bimg = img[:, :, 2]
-        new_img[:, :, 0] = FourierTransform.inverse_transform_flat(Rimg)
-        new_img[:, :, 1] = FourierTransform.inverse_transform_flat(Gimg)
-        new_img[:, :, 2] = FourierTransform.inverse_transform_flat(Bimg)
+        Himg = img[:, :, 0]
+        Simg = img[:, :, 1]
+        Vimg = img[:, :, 2]
+        new_img[:, :, 0] = abs(Himg)
+        new_img[:, :, 1] = abs(Simg)
+        new_img[:, :, 2] = FourierTransform.inverse_transform_flat(Vimg)
         return new_img
 
     @staticmethod
@@ -74,8 +68,8 @@ class FourierTransform:
         )
         if len(img.shape)==3:
             new_img = np.ndarray(img.shape,dtype=img.dtype)
-            new_img[:,:,0] = np.multiply(img[:,:,0],reshape_basis)
-            new_img[:,:,1] = np.multiply(img[:,:,1],reshape_basis)
+            new_img[:,:,0] = img[:,:,0]
+            new_img[:,:,1] = img[:,:,1]
             new_img[:,:,2] = np.multiply(img[:,:,2],reshape_basis)
             return new_img
         else:

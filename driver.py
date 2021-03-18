@@ -1,5 +1,6 @@
 from src.histogram_equalizer import HistogramEqualizer
 from src.histogram_matcher import HistogramMatcher
+from src.homomorphic_filter import HomomorphicFilter
 from src.mask_filter import MaskFilter
 from src.fourier import FourierTransform
 from src.adaptive_median_filter import AdaptiveMedianFilter
@@ -14,34 +15,61 @@ import cv2
 
 if __name__ == "__main__":
 
-    ##IMAGE 1
-    img1 = cv2.imread("images/10087_00_30s.jpg")
-    img2 = cv2.imread("images/20107_00_30s.jpg")
-    
-    ImageTransformer(img1,debug=True)\
-        .transform(HistogramMatcher.match,img2)\
-                .transform(IntensityTransformer.map_intensities_to_viewable)\
-                    .write("images/10087_00_30s_t.jpg")
-    ##IMAGE 2
-    # img1 = cv2.imread("images/20107_00_30s.jpg")
-    # ImageTransformer(img1,debug=True)\
-    #     .transform(IntensityTransformer.upper_threshold,k=150)\
-    #         .subtract_from(img1,k=.45)\
-    #             .transform(IntensityTransformer.map_intensities_to_viewable)\
-    #                 .write("images/20107_00_30s_t.jpg")
-    
-    ##IMAGE 3
-    # img1 = cv2.imread("images/20120_00_30s.jpg")
-    # ImageTransformer(img1,debug=True)\
-    #     .transform(IntensityTransformer.upper_threshold,k=150)\
-    #         .subtract_from(img1,k=.45)\
-    #             .transform(IntensityTransformer.map_intensities_to_viewable)\
-    #                 .write("images/20120_00_30s_t.jpg")
-    
-    ##IMAGE 4
-    # img1 = cv2.imread("images/20147_00_30s.jpg")
-    # img2 = cv2.imread("images/stanford.jpg")
-    # ImageTransformer(img1,debug=True)\
-    #     .transform(HistogramMatcher.match,img2)\
-    #         .write("images/20147_00_30s_t.jpg")
+    #IMAGE 1
+    img1 = cv2.imread("images/stanford.jpg")
+    img2 = cv2.imread("images/horiz_bars.jpg")
+    img3 = cv2.imread("images/diag_bars.jpg")
+    img4 = cv2.imread("images/hypno.jpg")
+    img5 = cv2.imread("images/fingerprint.jpg")
+    img6 = cv2.imread("images/seeds.jpg")
+    img7 = cv2.imread("images/checker.jpg")
 
+    N = img1.shape[0]
+    M = img1.shape[1]
+    
+    d_to_center = lambda x,y: np.sqrt((x - N / 2) ** 2 + (y - M / 2) ** 2)
+    #butterworth low pass
+    radius = 10
+    n = 10
+    butter_low = lambda i,j: 1 / (1 + (d_to_center(i, j) / radius) ** (2 * n))
+    butter_high = lambda i,j: 1/ (1+ (radius / (1 + d_to_center(i, j))) ** (2 * n))
+    
+    ImageTransformer(img1)\
+        .transform(HomomorphicFilter.filter,butter_high,filename="fuck")\
+            .write("images/filtered/stanford.jpg")
+    
+    ImageTransformer(img2)\
+        .transform(ImageUtils.convert_to_grayscale)\
+        .transform(FourierTransform.transform)\
+            .transform(FourierTransform.get_viewable_fourier)\
+                .write("images/fourier/horiz_bars.jpg")
+    
+    ImageTransformer(img3)\
+        .transform(ImageUtils.convert_to_grayscale)\
+        .transform(FourierTransform.transform)\
+            .transform(FourierTransform.get_viewable_fourier)\
+                .write("images/fourier/diag_bars.jpg")
+
+    ImageTransformer(img4)\
+        .transform(ImageUtils.convert_to_grayscale)\
+        .transform(FourierTransform.transform)\
+            .transform(FourierTransform.get_viewable_fourier)\
+                .write("images/fourier/hypno.jpg")
+
+    ImageTransformer(img5)\
+        .transform(ImageUtils.convert_to_grayscale)\
+        .transform(FourierTransform.transform)\
+            .transform(FourierTransform.get_viewable_fourier)\
+                .write("images/fourier/fingerprint.jpg")
+    
+    ImageTransformer(img6)\
+        .transform(ImageUtils.convert_to_grayscale)\
+        .transform(FourierTransform.transform)\
+            .transform(FourierTransform.get_viewable_fourier)\
+                .write("images/fourier/seeds.jpg")
+
+    ImageTransformer(img7)\
+        .transform(ImageUtils.convert_to_grayscale)\
+        .transform(FourierTransform.transform)\
+            .transform(FourierTransform.get_viewable_fourier)\
+                .write("images/fourier/checker.jpg")
