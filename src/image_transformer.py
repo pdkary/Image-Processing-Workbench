@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+import time
+
 def map_to_view(x):
     if x < 0:
         return 0
@@ -16,9 +18,12 @@ class ImageTransformer:
         if self.debug:
             print("beginning {}".format(func.__name__))
             print("| shape before: "+str(self.img.shape))
+            time_before = time.time()
         self.img = func(self.img, *args, **kwargs)
         if self.debug:
             print("| shape after: "+str(self.img.shape))
+            time_after = time.time()
+            print("| took {} seconds".format(np.round(time_after-time_before,3)))
         return self
     
     def add(self,img,k=1):
@@ -108,3 +113,4 @@ class ImageTransformer:
         
     def write(self, filename):
         cv2.imwrite(filename, self.img)
+        return self.img

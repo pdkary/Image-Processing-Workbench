@@ -31,7 +31,7 @@ class IntensityTransformer:
     @staticmethod
     def quantize(img,q,filename=None):
         inc = 255//q
-        levels = [inc*i for i in range(q)]
+        levels = [inc*i for i in range(q+1)]
 
         def get_q(x):
             if x==0:
@@ -47,9 +47,9 @@ class IntensityTransformer:
         return IntensityTransformer.transform(img,get_q,filename)
     
     @staticmethod
-    def binary_step(img,p,filename=None):
+    def binary_step(img,k,filename=None):
         newfilename = filename+"_step" if filename is not None else None
-        f = lambda x: 255 if x >= p else 0
+        f = lambda x: 255 if x >=k else 0
         return IntensityTransformer.transform(img,f,newfilename)
 
     @staticmethod
@@ -105,3 +105,22 @@ class IntensityTransformer:
         newfilename = filename+"_band_t_"+str(k1)+"_"+str(k2) if filename is not None else None
         f = lambda x: x if (x>=k1 and x<=k2) else 0
         return IntensityTransformer.transform(img,f,newfilename)
+
+    @staticmethod
+    def invert(img):
+        new_img = np.ndarray(shape=img.shape)
+        N = img.shape[0]
+        M = img.shape[1]
+        if len(img.shape)==3:
+            for i in range(N):
+                for j in range(M):
+                    R = img[i,j,0]
+                    G = img[i,j,1]
+                    B = img[i,j,2]
+                    new_img[i,j,:] = [255-R,255-G,255-B]
+            return new_img
+        if len(img.shape)==2:
+            for i in range(N):
+                for j in range(M):
+                    new_img[i,j] = 255-new_img[i,j]
+            return new_img

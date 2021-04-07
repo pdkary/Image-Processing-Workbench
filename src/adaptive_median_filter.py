@@ -14,6 +14,19 @@ class AdaptiveMedianFilter:
         if filename is not None:
             cv2.imwrite("images/filtered/"+filename+"_amf.jpg",new_img)
         return new_img
+    
+    @staticmethod
+    def filter_at(img, mask, smax,filename=None):
+        new_img = np.ndarray(img.shape)
+        if len(img.shape) == 3:
+            new_img = AdaptiveMedianFilter.filter_at_color(img, mask, smax)
+        elif len(img.shape) == 2:
+            new_img = AdaptiveMedianFilter.filter_at_flat(img, mask, smax)
+
+        if filename is not None:
+            cv2.imwrite("images/filtered/"+filename+"_amf.jpg",new_img)
+        return new_img
+
 
     @staticmethod
     def filter_flat(img, smax):
@@ -30,6 +43,22 @@ class AdaptiveMedianFilter:
         return new_img[smax : N + smax, smax : M + smax]
 
     @staticmethod
+    def filter_at_flat(img,mask, smax):
+        N = img.shape[0]
+        M = img.shape[1]
+        sxy = 1  # initial value
+        b_img = ImageUtils.add_border(img=img, b=smax)
+        b_mask = ImageUtils.add_border(img=mask,b=smax)
+        new_img = np.ndarray(b_img.shape)
+        for i in range(smax, N + smax):
+            for j in range(smax, M + smax):
+                if b_mask[i,j]==255:
+                    new_img[i, j] = AdaptiveMedianFilter.process_window(b_img, i, j, sxy, smax)
+                else:
+                    new_img[i,j] = b_img[i,j]
+        return new_img[smax : N + smax, smax : M + smax]
+
+    @staticmethod
     def filter_color(img, smax):
         new_img = np.ndarray(img.shape)
         Rimg = img[:, :, 0]
@@ -38,6 +67,17 @@ class AdaptiveMedianFilter:
         new_img[:, :, 0] = AdaptiveMedianFilter.filter_flat(Rimg, smax)
         new_img[:, :, 1] = AdaptiveMedianFilter.filter_flat(Gimg, smax)
         new_img[:, :, 2] = AdaptiveMedianFilter.filter_flat(Bimg, smax)
+        return new_img
+    
+    @staticmethod
+    def filter_at_color(img,mask, smax):
+        new_img = np.ndarray(img.shape)
+        Rimg = img[:, :, 0]
+        Gimg = img[:, :, 1]
+        Bimg = img[:, :, 2]
+        new_img[:, :, 0] = AdaptiveMedianFilter.filter_at_flat(Rimg, mask, smax)
+        new_img[:, :, 1] = AdaptiveMedianFilter.filter_at_flat(Gimg, mask, smax)
+        new_img[:, :, 2] = AdaptiveMedianFilter.filter_at_flat(Bimg, mask, smax)
         return new_img
 
     @staticmethod
