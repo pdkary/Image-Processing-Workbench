@@ -50,7 +50,7 @@ class MaskFilter:
     def ideal_band_pass(img, r_high, r_low, filename=None):
         N = img.shape[0]
         M = img.shape[1]
-        return np.multiply(ideal_high_pass(r_low), ideal_low_pass(r_high))
+        return np.multiply(MaskFilter.ideal_high_pass(img,r_low), MaskFilter.ideal_low_pass(img,r_high))
 
     @staticmethod
     def butterworth_low_pass(img, radius, n, filename=None):
@@ -115,6 +115,14 @@ class MaskFilter:
         return MaskFilter.make_mask(img,mask_func)
     
     @staticmethod
+    def vertical_line(img,i,thickness):
+        N = img.shape[0]
+        M = img.shape[1]
+        line_range = range(M//2-i-thickness,M//2+i+thickness)
+        mask_func = lambda i,j: 0 if j in line_range else 1
+        return MaskFilter.make_mask(img,mask_func)
+    
+    @staticmethod
     def cross(img,i,j,thickness):
         N = img.shape[0]
         M = img.shape[1]
@@ -130,4 +138,33 @@ class MaskFilter:
         i_range = range(N//2-i-thickness,N//2+i+thickness)
         j_range = range(M//2-i-thickness,M//2+i+thickness)
         mask_func = lambda i,j: 1 if (i in i_range or j in j_range) else 0
+        return MaskFilter.make_mask(img,mask_func)
+    
+    @staticmethod
+    def allow_rectangle(img,n,m):
+        N = img.shape[0]
+        M = img.shape[1]
+        i_range = range(N//2-n,N//2+n)
+        j_range = range(M//2-m,M//2+m)
+        mask_func = lambda i,j: 1 if (j in j_range and i in i_range) else 0
+        return MaskFilter.make_mask(img,mask_func)
+    
+    @staticmethod
+    def diagonal_line(img,theta,thickness,block=True):
+        N = img.shape[0]
+        M = img.shape[1]
+        cy = N//2
+        cx = M//2
+        mx = np.sin(theta)
+        my = np.cos(theta)
+        t = mx*thickness
+        def mask_func(i,j):
+            f1 = lambda i,j: (i-cy)*my <= (j-cx)*mx + t
+            f2 = lambda i,j: (i-cy)*my >= (j-cx)*mx - t
+            if(block):
+                return not (f1(i,j) and f2(i,j)) 
+            else:
+                return f1(i,j) and f2(i,j) 
+                
+
         return MaskFilter.make_mask(img,mask_func)

@@ -36,7 +36,7 @@ class ScratchDetector:
 
         return ImageTransformer(img,debug=True)\
                 .transform(ImageUtils.convert_to_grayscale)\
-                    .transform(Convolution.convolve,MaskFilter.butterworth_high_pass(img,R,2),False,'test')\
+                    .transform(Convolution.convolve,MaskFilter.butterworth_high_pass(img,R,2),convolve_g=False)\
                         .transform(IntensityTransformer.binary_step,k=20)\
                             .transform(Morphology.open,square_mask)\
                                 .transform(Convolution.convolve,blur_kernel(7))\
@@ -46,13 +46,13 @@ class ScratchDetector:
     @staticmethod
     def detect_vertical_using_cross(img):
         square_mask = MorphologicalMaskMaker.rectangle(1,1)
-        vert_mask = MorphologicalMaskMaker.rectangle(2,21)
+        big_rectangle_mask = MorphologicalMaskMaker.rectangle(2,8)
         return ImageTransformer(img,debug=True)\
                 .transform(ImageUtils.convert_to_grayscale)\
-                    .transform(Convolution.convolve,MaskFilter.inverse_cross(img,0,0,3),convolve_g=False,filename="line_test")\
+                    .transform(Convolution.convolve,MaskFilter.inverse_cross(img,0,0,3),convolve_g=False)\
                         .transform(IntensityTransformer.map_intensities_to_viewable)\
                             .transform(EdgeDetector.sobel_x)\
                                 .transform(IntensityTransformer.binary_step,128)\
                                     .transform(Morphology.open,square_mask)\
-                                        .transform(Morphology.erode,vert_mask)\
-                                        .get()
+                                        .transform(Morphology.erode,big_rectangle_mask)\
+                                            .get()

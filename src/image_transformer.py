@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 import time
+from src.image_utils import ImageUtils
+from src.intensity_transformer import IntensityTransformer
 
 def map_to_view(x):
     if x < 0:
@@ -54,7 +56,30 @@ class ImageTransformer:
     def add_to(self,img,k=1):
         tmp_img = self.img
         self.img = img
-        return self.add(tmp_img,k=k)   
+        return self.add(tmp_img,k=k) 
+
+    ##mask should be binary stepped ie) (0 || 255)
+    def add_at(self,mask,img2,k=1,filename=None):
+        bmask = mask/255
+        anti_mask = 1-bmask
+        new_img = np.ndarray(shape=self.img.shape)
+        if(len(self.img.shape)==3):
+            self.img[:,:,0] = np.multiply(anti_mask,self.img[:,:,0])
+            self.img[:,:,1] = np.multiply(anti_mask,self.img[:,:,1])
+            self.img[:,:,2] = np.multiply(anti_mask,self.img[:,:,2])
+            new_img[:,:,0] = np.multiply(bmask,img2[:,:,0])
+            new_img[:,:,1] = np.multiply(bmask,img2[:,:,1])
+            new_img[:,:,2] = np.multiply(bmask,img2[:,:,2])
+        elif len(self.img.shape)==2:
+            self.img = np.multiply(anti_mask,self.img)
+            new_img = np.multiply(bmask,img2)
+
+        if filename is not None:
+            cv2.imwrite("images/arithmetic/"+filename+"_add_by_mask.png",new_img)
+        
+        return self.add(new_img,k=k)
+        
+        
     
     def subtract(self,img,k=1):
         print("beginning subtract")

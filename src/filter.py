@@ -7,6 +7,15 @@ import numpy as np
 
 class Filter(FilterBase):
     contraharmonic_Q = 1.5
+
+    @staticmethod
+    def max_filter(img,n,m,filename=None):
+        return Filter.filter(Filter.process_window_max_filter,img,n,m,filename)
+
+    @staticmethod
+    def min_filter(img,n,m,filename=None):
+        return Filter.filter(Filter.process_window_min_filter,img,n,m,filename)
+
     @staticmethod
     def filter_arithmetic_mean(img,n,m,filename=None):
         return Filter.filter(Filter.process_window_arithmetic_mean,img,n,m,filename)
@@ -46,6 +55,16 @@ class Filter(FilterBase):
         window = img[i-n//2:i+1+n//2,j-m//2:j+1+m//2]
         return (window.sum()**(Filter.contraharmonic_Q+1))/(window.sum()**(Filter.contraharmonic_Q))
     
+    @staticmethod
+    def process_window_max_filter(img,i,j,n,m):
+        window = img[i-n//2:i+1+n//2,j-m//2:j+1+m//2]
+        return window.max()
+
+    @staticmethod
+    def process_window_min_filter(img,i,j,n,m):
+        window = img[i-n//2:i+1+n//2,j-m//2:j+1+m//2]
+        return window.min()
+
     @staticmethod
     def wiener_filter(img,kt,ks):
         H = MaskFilter.get_turbulence(img,kt)

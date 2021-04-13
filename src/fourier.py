@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+from src.intensity_transformer import IntensityTransformer
 
 """
 ASSUMES ALL INPUT IMAGES ARE EITHER GRAYSCALE OR HSV
@@ -11,6 +12,15 @@ class FourierTransform:
             return FourierTransform.transform_color(img, filename)
         elif len(img.shape) == 2:
             return FourierTransform.transform_flat(img, filename)
+
+    @staticmethod
+    def transform_phase_only(img,filename=None):
+        ft = FourierTransform.transform(img)
+        phot = ft/(1+np.abs(ft))
+        if filename is not None:
+            vf_img = FourierTransform.get_viewable_fourier(phot)
+            cv2.imwrite("images/fourier/" + filename + ".jpg", vf_img)
+        return phot
 
     @staticmethod
     def transform_color(img, filename=None):
@@ -38,14 +48,14 @@ class FourierTransform:
 
     @staticmethod
     def inverse_transform_color(img):
-        new_img = np.ndarray(img.shape)
+        new_img = np.ndarray(img.shape,dtype="uint8")
         Himg = img[:, :, 0]
         Simg = img[:, :, 1]
         Vimg = img[:, :, 2]
         new_img[:, :, 0] = abs(Himg)
         new_img[:, :, 1] = abs(Simg)
         new_img[:, :, 2] = FourierTransform.inverse_transform_flat(Vimg)
-        return new_img
+        return cv2.cvtColor(new_img,cv2.COLOR_HSV2RGB)
 
     @staticmethod
     def inverse_transform(img,filename=None):

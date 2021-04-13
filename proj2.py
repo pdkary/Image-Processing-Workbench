@@ -16,45 +16,15 @@ from src.scratch_detector import ScratchDetector
 from src.filter import Filter
 from src.kernels import *
 from src.mask_blur import MaskBlur
+from src.scratch_remover import ScratchRemover
 import numpy as np
 import cv2
 
 if __name__ == "__main__":
 
-    #IMAGE 1
-    filename = "kodim09_input"
-    img1 = cv2.imread("proj2_images/synthetic/"+filename+".png")
+    filename = "mlts09_input"
+    img = cv2.imread("proj2_images/real/"+filename+".png")
 
-    img1_mask = cv2.imread("proj2_images/out/"+filename+"_mask.png")
-
-    scratches = ImageTransformer(img1_mask,debug=True)\
-                    .transform(ImageUtils.convert_to_grayscale)\
-                        .get()
-
-    # scratches = ImageTransformer(img1,debug=True)\
-    #                 .transform(ScratchDetector.detect_vertical_high_pass,1,10)\
-    #                     .write("proj2_images/out/"+filename+"_mask.png")\
-    # scratches = ImageTransformer(img1,debug=True)\
-    #                 .transform(ScratchDetector.detect_vertical_using_cross)\
-    #                     .write("proj2_images/out/"+filename+"_mask.png")
-
-    F_blurred = ImageTransformer(img1,debug=True)\
-                    .transform(MaskBlur.blur_at,scratches,blur_x_strip_with_hole(21,3,7))\
-                        .transform(AdaptiveMedianFilter.filter,51)\
-                        .write("proj2_images/out/"+filename+".png")
-
-                        # .transform(AdaptiveMedianFilter.filter_at,scratches,100)\
-    # ImageTransformer(F_scratched-F_blurred,debug=True)\
-    #     .transform(IntensityTransformer.map_intensities_to_viewable)\
-    #         .transform(np.abs)\
-    #     .write("proj2_images/out/"+filename+"_fourier.png")
-    
-
-                    # .write("proj2_images/out/"+filename+".png")
-        # .transform(MaskBlur.blur_at,scratches,blur_x_strip_with_hole(31,5,11))\
-            # .transform(Convolution.convolve,sharpen_kernel_3)\
-                    # .transform(AdaptiveMedianFilter.filter_at,scratches,51)\
-                        # .transform(Convolution.convolve, MaskFilter.butterworth_low_pass(img1,400,1),False,'test',)\
-                # .transform(AdaptiveMedianFilter.filter_at,scratches,101)\
-                # .transform(MaskBlur.blur_at,scratches,blur_x_strip(31,5))\
-                
+    ImageTransformer(img,debug=True)\
+        .transform(ScratchRemover.remove_vertical_small,filename=filename)\
+            .write("proj2_images/out/"+filename+".png")
