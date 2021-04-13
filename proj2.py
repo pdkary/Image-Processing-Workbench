@@ -22,9 +22,21 @@ import cv2
 
 if __name__ == "__main__":
 
-    filename = "mlts09_input"
-    img = cv2.imread("proj2_images/real/"+filename+".png")
+    for i in range(9,19):
+        if(i==9):
+            filename_real = "mlts09_input"
+            filename_synthetic = "kodim09_input"
+        else:
+            filename_real = "mlts"+str(i)+"_input"
+            filename_synthetic = "kodim"+str(i)+"_input"
+        
+        img_real = cv2.imread("proj2_images/real/"+filename_real+".png")
+        img_synth = cv2.imread("proj2_images/synthetic/"+filename_synthetic+".png")
 
-    ImageTransformer(img,debug=True)\
-        .transform(ScratchRemover.remove_vertical_small,filename=filename)\
-            .write("proj2_images/out/"+filename+".png")
+        ImageTransformer(img_real,debug=True)\
+            .transform(ScratchRemover.remove_vertical_small,filename=filename_real)\
+                .write("proj2_images/out/"+filename_real+".png")
+
+        ImageTransformer(img_real,debug=True)\
+            .transform(ScratchRemover.remove_vertical_large,filename=filename_synthetic)\
+                .write("proj2_images/out/"+filename_synthetic+".png")
